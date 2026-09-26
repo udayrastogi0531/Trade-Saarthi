@@ -11,3 +11,4 @@ Development workflow documented.
 Environment configuration is kept outside version control.
 Portfolio intelligence supports position-level analysis.
 Portfolio intelligence supports position-level analysis.
+Market analysis includes technical and structural signals.
