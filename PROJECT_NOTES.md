@@ -15,3 +15,4 @@ Market analysis includes technical and structural signals.
 Risk analysis supports controlled decision making.
 AI copilot provides contextual trading explanations.
 News intelligence provides additional market context.
+AI copilot provides contextual trading explanations.
