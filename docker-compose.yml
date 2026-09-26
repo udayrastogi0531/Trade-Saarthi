@@ -1,0 +1,145 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: trading-postgres
+    environment:
+      POSTGRES_USER: trading
+      POSTGRES_PASSWORD: trading_secret
+      POSTGRES_DB: trading_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/app/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./backend/app/db/migrations/002_quant_upgrade.sql:/docker-entrypoint-initdb.d/02-quant-upgrade.sql
+      - ./backend/app/db/migrations/003_copilot.sql:/docker-entrypoint-initdb.d/03-copilot.sql
+      - ./backend/app/db/migrations/004_institutional_intel.sql:/docker-entrypoint-initdb.d/04-institutional-intel.sql
+      - ./backend/app/db/migrations/005_quant_validation.sql:/docker-entrypoint-initdb.d/05-quant-validation.sql
+      - ./backend/app/db/migrations/006_broker_tokens.sql:/docker-entrypoint-initdb.d/06-broker-tokens.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trading -d trading_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: trading-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trading-api
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://trading:trading_secret@postgres:5432/trading_db
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app/backend
+    command: uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trading-dashboard
+    env_file:
+      - .env
+    environment:
+      API_BASE_URL: http://api:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+    command: streamlit run frontend/dashboard/app.py --server.port=8501 --server.address=0.0.0.0
+
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trading-celery-worker
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://trading:trading_secret@postgres:5432/trading_db
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    command: celery -A backend.app.workers.celery_app worker --loglevel=info
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trading-celery-beat
+    env_file:
+      - .env
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - redis
+      - celery-worker
+    command: celery -A backend.app.workers.celery_app beat --loglevel=info
+
+  web:
+    build:
+      context: ./frontend/web
+      dockerfile: Dockerfile
+    container_name: trading-web
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "3001:3000"
+    depends_on:
+      - api
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: trading-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - api
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: trading-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres_data:
+  redis_data:
+  grafana_data:

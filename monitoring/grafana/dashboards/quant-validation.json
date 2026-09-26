@@ -1,0 +1,49 @@
+{
+  "title": "Quant Validation & System Health",
+  "uid": "quant-validation-v4",
+  "timezone": "browser",
+  "panels": [
+    {
+      "title": "Signals Approved vs Rejected",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        { "expr": "rate(trading_signals_approved_total[5m])", "legendFormat": "approved" },
+        { "expr": "rate(trading_signals_rejected_total[5m])", "legendFormat": "rejected" }
+      ]
+    },
+    {
+      "title": "Pipeline Latency (p95)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        { "expr": "histogram_quantile(0.95, rate(trading_pipeline_latency_seconds_bucket[5m]))", "legendFormat": "p95" }
+      ]
+    },
+    {
+      "title": "Scanner Health",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 8 },
+      "targets": [{ "expr": "rate(trading_scanner_runs_total[1h])" }]
+    },
+    {
+      "title": "Data Quality Events",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 8 },
+      "targets": [{ "expr": "sum(trading_data_quality_events_total)" }]
+    },
+    {
+      "title": "Portfolio Risk Blocks",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 8 },
+      "targets": [{ "expr": "sum(trading_portfolio_risk_blocks_total)" }]
+    },
+    {
+      "title": "Strategy Decay Alerts",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 8 },
+      "targets": [{ "expr": "sum(trading_strategy_decay_alerts_total)" }]
+    }
+  ],
+  "schemaVersion": 38
+}

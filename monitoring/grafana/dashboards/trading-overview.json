@@ -1,0 +1,28 @@
+{
+  "title": "AI Trading Platform",
+  "panels": [
+    {
+      "title": "API Requests",
+      "type": "graph",
+      "targets": [{ "expr": "rate(trading_api_requests_total[5m])" }]
+    },
+    {
+      "title": "Signals Approved vs Rejected",
+      "type": "graph",
+      "targets": [
+        { "expr": "rate(trading_signals_approved_total[5m])", "legendFormat": "approved" },
+        { "expr": "rate(trading_signals_rejected_total[5m])", "legendFormat": "rejected" }
+      ]
+    },
+    {
+      "title": "Scanner Runs",
+      "type": "stat",
+      "targets": [{ "expr": "trading_scanner_runs_total" }]
+    },
+    {
+      "title": "Pipeline Latency",
+      "type": "heatmap",
+      "targets": [{ "expr": "trading_pipeline_latency_seconds_bucket" }]
+    }
+  ]
+}

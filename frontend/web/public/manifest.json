@@ -1,0 +1,10 @@
+{
+  "name": "AI Trading Intelligence",
+  "short_name": "Trading AI",
+  "description": "Institutional AI market intelligence & copilot",
+  "start_url": "/copilot",
+  "display": "standalone",
+  "background_color": "#0a0e17",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary"
+}

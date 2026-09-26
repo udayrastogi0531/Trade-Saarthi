@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-surface text-gray-100 antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 768px) {
+  .card {
+    @apply p-4;
+  }
+  main {
+    @apply px-3;
+  }
+}
+
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+.card {
+  @apply bg-panel border border-border rounded-xl p-5 shadow-lg;
+}
+
+.btn-primary {
+  @apply bg-accent hover:bg-blue-600 disabled:opacity-50 rounded-lg px-4 py-2 text-sm font-medium transition;
+}
+
+.btn-secondary {
+  @apply border border-border hover:bg-surface disabled:opacity-50 rounded-lg px-4 py-2 text-sm transition;
+}
