@@ -17,3 +17,4 @@ AI copilot provides contextual trading explanations.
 News intelligence provides additional market context.
 AI copilot provides contextual trading explanations.
 Scanner modules support market opportunity discovery.
+Scanner modules support market opportunity discovery.
