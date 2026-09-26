@@ -18,3 +18,4 @@ News intelligence provides additional market context.
 AI copilot provides contextual trading explanations.
 Scanner modules support market opportunity discovery.
 Scanner modules support market opportunity discovery.
+Dashboard components provide a unified monitoring interface.
