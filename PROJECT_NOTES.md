@@ -6,3 +6,4 @@ Validation and automated tests are maintained under tests/.
 Market data and external providers are configured through environment variables.
 Monitoring configuration is maintained under monitoring/.
 Monitoring configuration is maintained under monitoring/.
+Trade-Saarthi project documentation is maintained under docs/.
