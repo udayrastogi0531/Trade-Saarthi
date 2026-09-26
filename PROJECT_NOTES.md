@@ -10,3 +10,4 @@ Trade-Saarthi project documentation is maintained under docs/.
 Development workflow documented.
 Environment configuration is kept outside version control.
 Portfolio intelligence supports position-level analysis.
+Portfolio intelligence supports position-level analysis.
